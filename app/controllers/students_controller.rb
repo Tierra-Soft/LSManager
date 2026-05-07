@@ -5,9 +5,10 @@ class StudentsController < ApplicationController
 
   def index
     @students = Student.order(:name)
-    @students = @students.where("name LIKE ? OR email LIKE ? OR student_code LIKE ?",
-                                "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%") if params[:q].present?
-    @students = @students.where(status: params[:status]) if params[:status].present?
+    if params[:q].present?
+      q = "%#{params[:q]}%"
+      @students = @students.where("name LIKE ? OR email LIKE ? OR furigana LIKE ? OR referee_number LIKE ?", q, q, q, q)
+    end
     @students = @students.page(params[:page])
   end
 
@@ -47,7 +48,6 @@ class StudentsController < ApplicationController
   def import
     if request.post?
       if params[:confirm]
-        # Step 2: 確認後にインポート実行
         tmp_path = session.delete(:csv_tmp_path)
         if tmp_path.blank? || !File.exist?(tmp_path)
           redirect_to import_students_path, alert: "セッションが切れました。再度アップロードしてください"
@@ -63,7 +63,6 @@ class StudentsController < ApplicationController
           render :import
         end
       else
-        # Step 1: アップロード→プレビュー表示
         if params[:file].blank?
           redirect_to import_students_path, alert: "ファイルを選択してください"
           return
@@ -79,11 +78,11 @@ class StudentsController < ApplicationController
   end
 
   def export_csv
-    students = Student.order(:student_code)
+    students = Student.order(:name)
     csv_data = CSV.generate(encoding: "UTF-8", headers: true) do |csv|
-      csv << %w[student_code name email department enrolled_on status]
+      csv << Student::CSV_COLUMNS.keys
       students.each do |s|
-        csv << [s.student_code, s.name, s.email, s.department, s.enrolled_on, s.status]
+        csv << Student::CSV_COLUMNS.values.map { |f| s.send(f) }
       end
     end
     send_data "﻿#{csv_data}", filename: "students_#{Date.today}.csv", type: "text/csv"
@@ -110,6 +109,17 @@ class StudentsController < ApplicationController
   end
 
   def student_params
-    params.require(:student).permit(:name, :email, :student_code, :department, :enrolled_on, :status)
+    params.require(:student).permit(
+      :name, :email, :furigana, :date_of_birth, :gender,
+      :association, :skill_category, :application_qualification,
+      :reception_number, :referee_number, :category,
+      :postal_code, :prefecture, :city, :address_detail,
+      :phone_home, :phone_work, :phone_mobile, :fax_type, :fax,
+      :seminar_number, :application_method, :application_date,
+      :payment_status, :payment_amount, :payment_method,
+      :payment_due_date, :payment_completed_date,
+      :attendance, :result, :pass_processed_date,
+      :promotion_processed_date, :jfa_id, :comment
+    )
   end
 end

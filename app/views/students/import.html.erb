@@ -10,7 +10,7 @@
 <% end %>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-5">
     <div class="card mb-4">
       <div class="card-header">CSVファイルアップロード</div>
       <div class="card-body">
@@ -19,34 +19,32 @@
             <%= f.label :file, "CSVファイル", class: "form-label" %>
             <%= f.file_field :file, accept: ".csv", class: "form-control", required: true %>
           </div>
-          <%= f.submit "インポート実行", class: "btn btn-success" %>
+          <%= f.submit "プレビュー確認", class: "btn btn-success" %>
           <%= link_to "キャンセル", students_path, class: "btn btn-secondary" %>
         <% end %>
       </div>
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-7">
     <div class="card">
-      <div class="card-header">CSVフォーマット</div>
-      <div class="card-body">
-        <p class="text-muted">1行目はヘッダー行です。以下の列が必要です：</p>
-        <table class="table table-sm table-bordered">
-          <thead class="table-light">
-            <tr><th>列名</th><th>説明</th><th>必須</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><code>student_code</code></td><td>学籍番号</td><td><span class="badge bg-danger">必須</span></td></tr>
-            <tr><td><code>name</code></td><td>名前</td><td><span class="badge bg-danger">必須</span></td></tr>
-            <tr><td><code>email</code></td><td>メールアドレス</td><td><span class="badge bg-danger">必須</span></td></tr>
-            <tr><td><code>department</code></td><td>部署</td><td>任意</td></tr>
-            <tr><td><code>enrolled_on</code></td><td>入学日 (YYYY-MM-DD)</td><td>任意</td></tr>
-            <tr><td><code>status</code></td><td>active/inactive/completed</td><td>任意</td></tr>
-          </tbody>
-        </table>
-        <p class="mb-0">
-          <small class="text-muted">同一メールアドレスの場合は上書き更新されます。</small>
-        </p>
+      <div class="card-header">CSVカラム一覧（1行目はヘッダー行）</div>
+      <div class="card-body p-0">
+        <div class="table-responsive" style="max-height:400px;overflow-y:auto">
+          <table class="table table-sm table-bordered mb-0">
+            <thead class="table-light sticky-top">
+              <tr><th>#</th><th>カラム名</th></tr>
+            </thead>
+            <tbody>
+              <% Student::CSV_COLUMNS.keys.each_with_index do |col, i| %>
+                <tr><td class="text-muted"><%= i + 1 %></td><td><code><%= col %></code></td></tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-2">
+          <small class="text-muted">メールアドレスが同じ場合は上書き更新されます。</small>
+        </div>
       </div>
     </div>
   </div>

@@ -5,34 +5,155 @@
     </div>
   <% end %>
 
-  <div class="row g-3">
-    <div class="col-md-6">
-      <%= f.label :name, "名前", class: "form-label" %>
+  <h6 class="text-muted border-bottom pb-1 mb-3">基本情報</h6>
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <%= f.label :referee_number, "審判登録番号", class: "form-label" %>
+      <%= f.text_field :referee_number, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :reception_number, "受付整理番号", class: "form-label" %>
+      <%= f.text_field :reception_number, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :jfa_id, "JFAID", class: "form-label" %>
+      <%= f.text_field :jfa_id, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :name, "氏名", class: "form-label" %>
       <%= f.text_field :name, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :furigana, "フリガナ", class: "form-label" %>
+      <%= f.text_field :furigana, class: "form-control" %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :date_of_birth, "生年月日", class: "form-label" %>
+      <%= f.date_field :date_of_birth, class: "form-control" %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :gender, "性別", class: "form-label" %>
+      <%= f.text_field :gender, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :association, "所属協会", class: "form-label" %>
+      <%= f.text_field :association, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :skill_category, "技能区分", class: "form-label" %>
+      <%= f.text_field :skill_category, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :application_qualification, "申込時資格", class: "form-label" %>
+      <%= f.text_field :application_qualification, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :category, "カテゴリー", class: "form-label" %>
+      <%= f.text_field :category, class: "form-control" %>
     </div>
     <div class="col-md-6">
       <%= f.label :email, "メールアドレス", class: "form-label" %>
       <%= f.email_field :email, class: "form-control", required: true %>
     </div>
-    <div class="col-md-4">
-      <%= f.label :student_code, "学籍番号", class: "form-label" %>
-      <%= f.text_field :student_code, class: "form-control", required: true %>
+  </div>
+
+  <h6 class="text-muted border-bottom pb-1 mb-3">住所・連絡先</h6>
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <%= f.label :postal_code, "住所（〒）", class: "form-label" %>
+      <%= f.text_field :postal_code, class: "form-control" %>
     </div>
-    <div class="col-md-4">
-      <%= f.label :department, "部署", class: "form-label" %>
-      <%= f.text_field :department, class: "form-control" %>
+    <div class="col-md-3">
+      <%= f.label :prefecture, "都道府県", class: "form-label" %>
+      <%= f.text_field :prefecture, class: "form-control" %>
     </div>
-    <div class="col-md-4">
-      <%= f.label :enrolled_on, "入学日", class: "form-label" %>
-      <%= f.date_field :enrolled_on, class: "form-control" %>
+    <div class="col-md-3">
+      <%= f.label :city, "市区郡", class: "form-label" %>
+      <%= f.text_field :city, class: "form-control" %>
     </div>
-    <div class="col-md-4">
-      <%= f.label :status, "状態", class: "form-label" %>
-      <%= f.select :status, Student.statuses.map { |k, _| [k, k] }, {}, class: "form-select" %>
+    <div class="col-md-6">
+      <%= f.label :address_detail, "町名・番地", class: "form-label" %>
+      <%= f.text_field :address_detail, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :phone_home, "電話（自宅）", class: "form-label" %>
+      <%= f.text_field :phone_home, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :phone_work, "電話（勤務先）", class: "form-label" %>
+      <%= f.text_field :phone_work, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :phone_mobile, "電話（携帯）", class: "form-label" %>
+      <%= f.text_field :phone_mobile, class: "form-control" %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :fax_type, "ファックス区分", class: "form-label" %>
+      <%= f.text_field :fax_type, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :fax, "ファックス", class: "form-label" %>
+      <%= f.text_field :fax, class: "form-control" %>
     </div>
   </div>
 
-  <div class="d-flex gap-2 mt-3">
+  <h6 class="text-muted border-bottom pb-1 mb-3">申込・支払情報</h6>
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <%= f.label :seminar_number, "講習会・研修会番号", class: "form-label" %>
+      <%= f.text_field :seminar_number, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :application_method, "申込方法", class: "form-label" %>
+      <%= f.text_field :application_method, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :application_date, "申込日", class: "form-label" %>
+      <%= f.date_field :application_date, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :payment_status, "支払状況", class: "form-label" %>
+      <%= f.text_field :payment_status, class: "form-control" %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :payment_amount, "支払金額", class: "form-label" %>
+      <%= f.number_field :payment_amount, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :payment_method, "支払方法", class: "form-label" %>
+      <%= f.text_field :payment_method, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :payment_due_date, "支払期限", class: "form-label" %>
+      <%= f.date_field :payment_due_date, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :payment_completed_date, "支払完了日", class: "form-label" %>
+      <%= f.date_field :payment_completed_date, class: "form-control" %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :attendance, "出欠", class: "form-label" %>
+      <%= f.text_field :attendance, class: "form-control" %>
+    </div>
+    <div class="col-md-2">
+      <%= f.label :result, "結果", class: "form-label" %>
+      <%= f.text_field :result, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :pass_processed_date, "合格処理日", class: "form-label" %>
+      <%= f.date_field :pass_processed_date, class: "form-control" %>
+    </div>
+    <div class="col-md-3">
+      <%= f.label :promotion_processed_date, "昇級認定処理日", class: "form-label" %>
+      <%= f.date_field :promotion_processed_date, class: "form-control" %>
+    </div>
+    <div class="col-12">
+      <%= f.label :comment, "コメント", class: "form-label" %>
+      <%= f.text_area :comment, class: "form-control", rows: 3 %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
     <%= f.submit student.new_record? ? "登録" : "更新", class: "btn btn-primary" %>
     <%= link_to "キャンセル", students_path, class: "btn btn-secondary" %>
   </div>

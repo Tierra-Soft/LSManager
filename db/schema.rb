@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_102226) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_07_132648) do
   create_table "admins", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -82,13 +82,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_102226) do
   end
 
   create_table "students", force: :cascade do |t|
+    t.string "address_detail"
+    t.date "application_date"
+    t.string "application_method"
+    t.string "application_qualification"
+    t.string "association"
+    t.string "attendance"
+    t.string "category"
+    t.string "city"
+    t.text "comment"
     t.datetime "created_at", null: false
-    t.string "department"
+    t.date "date_of_birth"
     t.string "email"
-    t.date "enrolled_on"
+    t.string "fax"
+    t.string "fax_type"
+    t.string "furigana"
+    t.string "gender"
+    t.string "jfa_id"
     t.string "name"
-    t.integer "status"
-    t.string "student_code"
+    t.date "pass_processed_date"
+    t.integer "payment_amount"
+    t.date "payment_completed_date"
+    t.date "payment_due_date"
+    t.string "payment_method"
+    t.string "payment_status"
+    t.string "phone_home"
+    t.string "phone_mobile"
+    t.string "phone_work"
+    t.string "postal_code"
+    t.string "prefecture"
+    t.date "promotion_processed_date"
+    t.string "reception_number"
+    t.string "referee_number"
+    t.string "result"
+    t.string "seminar_number"
+    t.string "skill_category"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_students_on_email", unique: true
   end

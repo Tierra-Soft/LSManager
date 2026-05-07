@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2><i class="bi bi-person-fill"></i> <%= @student.name %></h2>
+  <h2><i class="bi bi-person-fill"></i> <%= @student.name %> <small class="text-muted fs-6"><%= @student.furigana %></small></h2>
   <div class="d-flex gap-2">
     <%= link_to "進捗管理", student_progresses_path(@student), class: "btn btn-outline-info" %>
     <%= link_to "編集", edit_student_path(@student), class: "btn btn-outline-primary" %>
@@ -7,70 +7,83 @@
   </div>
 </div>
 
-<div class="row g-4">
-  <div class="col-md-4">
-    <div class="card">
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card h-100">
       <div class="card-header">基本情報</div>
       <div class="card-body">
         <dl class="row mb-0">
-          <dt class="col-5">学籍番号</dt><dd class="col-7"><code><%= @student.student_code %></code></dd>
-          <dt class="col-5">名前</dt><dd class="col-7"><%= @student.name %></dd>
-          <dt class="col-5">メール</dt><dd class="col-7 text-break"><%= @student.email %></dd>
-          <dt class="col-5">部署</dt><dd class="col-7"><%= @student.department || "-" %></dd>
-          <dt class="col-5">入学日</dt><dd class="col-7"><%= @student.enrolled_on&.strftime("%Y/%m/%d") || "-" %></dd>
-          <dt class="col-5">状態</dt>
-          <dd class="col-7">
-            <% badge = { "active" => "success", "inactive" => "secondary", "completed" => "primary" }[@student.status] %>
-            <span class="badge bg-<%= badge %>"><%= @student.status %></span>
-          </dd>
+          <% [
+            ["審判登録番号", @student.referee_number],
+            ["受付整理番号", @student.reception_number],
+            ["JFAID",        @student.jfa_id],
+            ["氏名",         @student.name],
+            ["フリガナ",     @student.furigana],
+            ["生年月日",     @student.date_of_birth&.strftime("%Y/%m/%d")],
+            ["性別",         @student.gender],
+            ["所属協会",     @student.association],
+            ["技能区分",     @student.skill_category],
+            ["申込時資格",   @student.application_qualification],
+            ["カテゴリー",   @student.category],
+            ["メールアドレス", @student.email],
+          ].each do |label, value| %>
+            <dt class="col-5 text-muted"><%= label %></dt>
+            <dd class="col-7"><%= value.presence || "-" %></dd>
+          <% end %>
         </dl>
       </div>
     </div>
   </div>
 
-  <div class="col-md-8">
+  <div class="col-md-6">
     <div class="card mb-3">
-      <div class="card-header">受講コース</div>
+      <div class="card-header">住所・連絡先</div>
       <div class="card-body">
-        <% if @enrollments.any? %>
-          <ul class="list-group list-group-flush">
-            <% @enrollments.each do |enrollment| %>
-              <li class="list-group-item d-flex justify-content-between">
-                <%= enrollment.course.title %>
-                <small class="text-muted"><%= enrollment.enrolled_on&.strftime("%Y/%m/%d") %></small>
-              </li>
-            <% end %>
-          </ul>
-        <% else %>
-          <p class="text-muted mb-0">コースに登録されていません</p>
-        <% end %>
+        <dl class="row mb-0">
+          <% [
+            ["〒",         @student.postal_code],
+            ["都道府県",   @student.prefecture],
+            ["市区郡",     @student.city],
+            ["町名・番地", @student.address_detail],
+            ["電話（自宅）",   @student.phone_home],
+            ["電話（勤務先）", @student.phone_work],
+            ["電話（携帯）",   @student.phone_mobile],
+            ["ファックス区分", @student.fax_type],
+            ["ファックス",     @student.fax],
+          ].each do |label, value| %>
+            <dt class="col-5 text-muted"><%= label %></dt>
+            <dd class="col-7"><%= value.presence || "-" %></dd>
+          <% end %>
+        </dl>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header">最近の進捗</div>
-      <div class="table-responsive">
-        <table class="table table-sm mb-0">
-          <thead class="table-light">
-            <tr><th>コース</th><th>レッスン</th><th>状態</th><th>完了日</th></tr>
-          </thead>
-          <tbody>
-            <% @recent_progresses.each do |progress| %>
-              <tr>
-                <td><%= progress.lesson.course.title %></td>
-                <td><%= progress.lesson.title %></td>
-                <td>
-                  <% colors = { "completed" => "success", "in_progress" => "warning", "not_started" => "secondary" } %>
-                  <span class="badge bg-<%= colors[progress.status] %>"><%= progress.status %></span>
-                </td>
-                <td><%= progress.completed_at&.strftime("%Y/%m/%d") || "-" %></td>
-              </tr>
-            <% end %>
-            <% if @recent_progresses.empty? %>
-              <tr><td colspan="4" class="text-center text-muted py-3">進捗データがありません</td></tr>
-            <% end %>
-          </tbody>
-        </table>
+      <div class="card-header">申込・支払情報</div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <% [
+            ["講習会・研修会番号", @student.seminar_number],
+            ["申込方法",   @student.application_method],
+            ["申込日",     @student.application_date&.strftime("%Y/%m/%d")],
+            ["支払状況",   @student.payment_status],
+            ["支払金額",   @student.payment_amount ? "#{@student.payment_amount}円" : nil],
+            ["支払方法",   @student.payment_method],
+            ["支払期限",   @student.payment_due_date&.strftime("%Y/%m/%d")],
+            ["支払完了日", @student.payment_completed_date&.strftime("%Y/%m/%d")],
+            ["出欠",       @student.attendance],
+            ["結果",       @student.result],
+            ["合格処理日",       @student.pass_processed_date&.strftime("%Y/%m/%d")],
+            ["昇級認定処理日",   @student.promotion_processed_date&.strftime("%Y/%m/%d")],
+          ].each do |label, value| %>
+            <dt class="col-5 text-muted"><%= label %></dt>
+            <dd class="col-7"><%= value.presence || "-" %></dd>
+          <% end %>
+        </dl>
+        <% if @student.comment.present? %>
+          <hr><strong>コメント</strong>
+          <p class="mb-0"><%= @student.comment %></p>
+        <% end %>
       </div>
     </div>
   </div>
