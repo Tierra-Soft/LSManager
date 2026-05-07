@@ -11,7 +11,8 @@
         <tr>
           <th>#</th>
           <% @preview_headers.each do |h| %>
-            <th><code><%= h %></code></th>
+            <% col_width = [h.length, 5].min %>
+            <th style="width:<%= col_width %>em"><code><%= h.truncate(5, omission: "") %></code></th>
           <% end %>
         </tr>
       </thead>
@@ -19,8 +20,9 @@
         <% @preview_rows.each.with_index(1) do |row, i| %>
           <tr>
             <td class="text-muted"><%= i %></td>
-            <% row.each do |cell| %>
-              <td><%= cell %></td>
+            <% row.each_with_index do |cell, j| %>
+              <% col_width = [@preview_headers[j].to_s.length, 5].min %>
+              <td><%= cell.to_s.truncate(col_width, omission: "") %></td>
             <% end %>
           </tr>
         <% end %>
