@@ -111,7 +111,7 @@ class StudentsController < ApplicationController
   def student_params
     params.require(:student).permit(
       :name, :email, :furigana, :date_of_birth, :gender,
-      :association, :skill_category, :application_qualification,
+      :affiliated_association, :skill_category, :application_qualification,
       :reception_number, :referee_number, :category,
       :postal_code, :prefecture, :city, :address_detail,
       :phone_home, :phone_work, :phone_mobile, :fax_type, :fax,

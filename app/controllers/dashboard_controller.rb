@@ -1,7 +1,7 @@
 class DashboardController < ApplicationController
   def index
     @total_students = Student.count
-    @active_students = Student.active.count
+    @active_students = Student.count
     @total_courses = Course.published.count
     @recent_email_logs = EmailLog.includes(:student, :email_template).recent.limit(10)
     @progress_stats = {

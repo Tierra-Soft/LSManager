@@ -8,7 +8,7 @@ class Student < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   CSV_COLUMNS = {
-    "所属協会"         => :association,
+    "所属協会"         => :affiliated_association,
     "技能区分"         => :skill_category,
     "申込時資格"       => :application_qualification,
     "受付整理番号"     => :reception_number,
