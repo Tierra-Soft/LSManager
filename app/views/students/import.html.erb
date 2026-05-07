@@ -14,7 +14,7 @@
     <div class="card mb-4">
       <div class="card-header">CSVファイルアップロード</div>
       <div class="card-body">
-        <%= form_with url: import_students_path, multipart: true do |f| %>
+        <%= form_with url: import_students_path, multipart: true, data: { turbo: false } do |f| %>
           <div class="mb-3">
             <%= f.label :file, "CSVファイル", class: "form-label" %>
             <%= f.file_field :file, accept: ".csv", class: "form-control", required: true %>

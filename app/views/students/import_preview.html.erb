@@ -36,7 +36,7 @@
 </div>
 
 <div class="d-flex gap-2">
-  <%= form_with url: import_students_path do |f| %>
+  <%= form_with url: import_students_path, data: { turbo: false } do |f| %>
     <%= f.hidden_field :confirm, value: "1" %>
     <%= f.submit "#{@total_rows}件をインポートする", class: "btn btn-success" %>
   <% end %>
