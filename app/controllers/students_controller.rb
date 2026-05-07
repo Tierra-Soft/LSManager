@@ -46,17 +46,34 @@ class StudentsController < ApplicationController
 
   def import
     if request.post?
-      if params[:file].blank?
-        redirect_to import_students_path, alert: "ファイルを選択してください"
-        return
-      end
-      result = Student.import_csv(params[:file])
-      if result[:errors].empty?
-        redirect_to students_path, notice: "#{result[:imported]}件の受講者データをインポートしました"
+      if params[:confirm]
+        # Step 2: 確認後にインポート実行
+        tmp_path = session.delete(:csv_tmp_path)
+        if tmp_path.blank? || !File.exist?(tmp_path)
+          redirect_to import_students_path, alert: "セッションが切れました。再度アップロードしてください"
+          return
+        end
+        result = Student.import_csv_from_path(tmp_path)
+        File.delete(tmp_path) rescue nil
+        if result[:errors].empty?
+          redirect_to students_path, notice: "#{result[:imported]}件の受講者データをインポートしました"
+        else
+          @errors = result[:errors]
+          @imported = result[:imported]
+          render :import
+        end
       else
-        @errors = result[:errors]
-        @imported = result[:imported]
-        render :import
+        # Step 1: アップロード→プレビュー表示
+        if params[:file].blank?
+          redirect_to import_students_path, alert: "ファイルを選択してください"
+          return
+        end
+        tmp_path = Rails.root.join("tmp", "csv_import_#{SecureRandom.hex(8)}.csv")
+        FileUtils.cp(params[:file].path, tmp_path)
+        session[:csv_tmp_path] = tmp_path.to_s
+
+        @preview_headers, @preview_rows, @total_rows = parse_csv_preview(tmp_path)
+        render :import_preview
       end
     end
   end
@@ -76,6 +93,20 @@ class StudentsController < ApplicationController
 
   def set_student
     @student = Student.find(params[:id])
+  end
+
+  def parse_csv_preview(path)
+    headers = nil
+    rows = []
+    total = 0
+    CSV.foreach(path, headers: true, encoding: "UTF-8:UTF-8") do |row|
+      headers ||= row.headers
+      rows << row.fields if rows.size < 5
+      total += 1
+    end
+    [headers || [], rows, total]
+  rescue
+    [[], [], 0]
   end
 
   def student_params

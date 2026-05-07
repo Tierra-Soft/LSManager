@@ -10,6 +10,29 @@ class Student < ApplicationRecord
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :student_code, presence: true, uniqueness: true
 
+  def self.import_csv_from_path(path)
+    errors = []
+    imported = 0
+    CSV.foreach(path, headers: true, encoding: "UTF-8:UTF-8") do |row|
+      student = find_or_initialize_by(email: row["email"])
+      student.assign_attributes(
+        name: row["name"],
+        student_code: row["student_code"],
+        department: row["department"],
+        enrolled_on: row["enrolled_on"],
+        status: row["status"].presence || "active"
+      )
+      if student.save
+        imported += 1
+      else
+        errors << "行 #{$.}: #{student.errors.full_messages.join(', ')}"
+      end
+    end
+    { imported: imported, errors: errors }
+  rescue CSV::MalformedCSVError => e
+    { imported: 0, errors: ["CSVフォーマットエラー: #{e.message}"] }
+  end
+
   def self.import_csv(file)
     errors = []
     imported = 0
