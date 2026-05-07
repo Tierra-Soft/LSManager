@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  student: one
+  email_template: one
+  sent_at: 2026-05-07 19:22:23
+  status: 1
+  error_message: MyText
+
+two:
+  student: two
+  email_template: two
+  sent_at: 2026-05-07 19:22:23
+  status: 1
+  error_message: MyText

@@ -1,0 +1,24 @@
+<%= form_with model: course do |f| %>
+  <% if course.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0"><% course.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :title, "コース名", class: "form-label" %>
+    <%= f.text_field :title, class: "form-control", required: true %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :description, "説明", class: "form-label" %>
+    <%= f.text_area :description, class: "form-control", rows: 4 %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :status, "ステータス", class: "form-label" %>
+    <%= f.select :status, Course.statuses.map { |k, _| [k, k] }, {}, class: "form-select" %>
+  </div>
+  <div class="d-flex gap-2">
+    <%= f.submit course.new_record? ? "作成" : "更新", class: "btn btn-primary" %>
+    <%= link_to "キャンセル", courses_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

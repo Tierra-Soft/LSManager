@@ -1,0 +1,39 @@
+<%= form_with model: student do |f| %>
+  <% if student.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0"><% student.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <%= f.label :name, "名前", class: "form-label" %>
+      <%= f.text_field :name, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :email, "メールアドレス", class: "form-label" %>
+      <%= f.email_field :email, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :student_code, "学籍番号", class: "form-label" %>
+      <%= f.text_field :student_code, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :department, "部署", class: "form-label" %>
+      <%= f.text_field :department, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :enrolled_on, "入学日", class: "form-label" %>
+      <%= f.date_field :enrolled_on, class: "form-control" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :status, "状態", class: "form-label" %>
+      <%= f.select :status, Student.statuses.map { |k, _| [k, k] }, {}, class: "form-select" %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 mt-3">
+    <%= f.submit student.new_record? ? "登録" : "更新", class: "btn btn-primary" %>
+    <%= link_to "キャンセル", students_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

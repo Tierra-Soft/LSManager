@@ -1,0 +1,95 @@
+<h2 class="mb-4"><i class="bi bi-speedometer2"></i> ダッシュボード</h2>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card border-primary">
+      <div class="card-body text-center">
+        <i class="bi bi-people-fill text-primary" style="font-size:2rem"></i>
+        <h3 class="mt-2"><%= @total_students %></h3>
+        <p class="text-muted mb-0">受講者総数</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-success">
+      <div class="card-body text-center">
+        <i class="bi bi-person-check-fill text-success" style="font-size:2rem"></i>
+        <h3 class="mt-2"><%= @active_students %></h3>
+        <p class="text-muted mb-0">アクティブ受講者</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-info">
+      <div class="card-body text-center">
+        <i class="bi bi-book-fill text-info" style="font-size:2rem"></i>
+        <h3 class="mt-2"><%= @total_courses %></h3>
+        <p class="text-muted mb-0">公開中コース</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-warning">
+      <div class="card-body text-center">
+        <i class="bi bi-check-circle-fill text-warning" style="font-size:2rem"></i>
+        <h3 class="mt-2"><%= @progress_stats[:completed] %></h3>
+        <p class="text-muted mb-0">完了レッスン数</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-bar-chart-fill"></i> 進捗状況</div>
+      <div class="card-body">
+        <% total = @progress_stats.values.sum %>
+        <% if total > 0 %>
+          <% [["完了", :completed, "success"], ["学習中", :in_progress, "warning"], ["未着手", :not_started, "secondary"]].each do |label, key, color| %>
+            <div class="mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <span><%= label %></span>
+                <span><%= @progress_stats[key] %>件</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-<%= color %>" style="width: <%= (@progress_stats[key].to_f / total * 100).round %>%"></div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">データがありません</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-envelope-fill"></i> 最近のメール送信</span>
+        <%= link_to "全件表示", email_logs_path, class: "btn btn-sm btn-outline-secondary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>受講者</th><th>テンプレート</th><th>送信日時</th><th>状態</th></tr></thead>
+          <tbody>
+            <% @recent_email_logs.each do |log| %>
+              <tr>
+                <td><%= log.student&.name %></td>
+                <td><%= log.email_template&.name %></td>
+                <td><%= log.sent_at&.strftime("%m/%d %H:%M") %></td>
+                <td>
+                  <% badge = log.sent? ? "success" : (log.failed? ? "danger" : "secondary") %>
+                  <span class="badge bg-<%= badge %>"><%= log.status %></span>
+                </td>
+              </tr>
+            <% end %>
+            <% if @recent_email_logs.empty? %>
+              <tr><td colspan="4" class="text-center text-muted py-3">送信履歴がありません</td></tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

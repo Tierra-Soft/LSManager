@@ -1,0 +1,77 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-person-fill"></i> <%= @student.name %></h2>
+  <div class="d-flex gap-2">
+    <%= link_to "進捗管理", student_progresses_path(@student), class: "btn btn-outline-info" %>
+    <%= link_to "編集", edit_student_path(@student), class: "btn btn-outline-primary" %>
+    <%= link_to "一覧へ", students_path, class: "btn btn-secondary" %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">基本情報</div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-5">学籍番号</dt><dd class="col-7"><code><%= @student.student_code %></code></dd>
+          <dt class="col-5">名前</dt><dd class="col-7"><%= @student.name %></dd>
+          <dt class="col-5">メール</dt><dd class="col-7 text-break"><%= @student.email %></dd>
+          <dt class="col-5">部署</dt><dd class="col-7"><%= @student.department || "-" %></dd>
+          <dt class="col-5">入学日</dt><dd class="col-7"><%= @student.enrolled_on&.strftime("%Y/%m/%d") || "-" %></dd>
+          <dt class="col-5">状態</dt>
+          <dd class="col-7">
+            <% badge = { "active" => "success", "inactive" => "secondary", "completed" => "primary" }[@student.status] %>
+            <span class="badge bg-<%= badge %>"><%= @student.status %></span>
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card mb-3">
+      <div class="card-header">受講コース</div>
+      <div class="card-body">
+        <% if @enrollments.any? %>
+          <ul class="list-group list-group-flush">
+            <% @enrollments.each do |enrollment| %>
+              <li class="list-group-item d-flex justify-content-between">
+                <%= enrollment.course.title %>
+                <small class="text-muted"><%= enrollment.enrolled_on&.strftime("%Y/%m/%d") %></small>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted mb-0">コースに登録されていません</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">最近の進捗</div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead class="table-light">
+            <tr><th>コース</th><th>レッスン</th><th>状態</th><th>完了日</th></tr>
+          </thead>
+          <tbody>
+            <% @recent_progresses.each do |progress| %>
+              <tr>
+                <td><%= progress.lesson.course.title %></td>
+                <td><%= progress.lesson.title %></td>
+                <td>
+                  <% colors = { "completed" => "success", "in_progress" => "warning", "not_started" => "secondary" } %>
+                  <span class="badge bg-<%= colors[progress.status] %>"><%= progress.status %></span>
+                </td>
+                <td><%= progress.completed_at&.strftime("%Y/%m/%d") || "-" %></td>
+              </tr>
+            <% end %>
+            <% if @recent_progresses.empty? %>
+              <tr><td colspan="4" class="text-center text-muted py-3">進捗データがありません</td></tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-book-fill"></i> <%= @course.title %></h2>
+  <div class="d-flex gap-2">
+    <%= link_to "レッスン追加", new_course_lesson_path(@course), class: "btn btn-outline-success" %>
+    <%= link_to "編集", edit_course_path(@course), class: "btn btn-outline-primary" %>
+    <%= link_to "一覧へ", courses_path, class: "btn btn-secondary" %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">コース情報</div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-5">ステータス</dt>
+          <dd class="col-7">
+            <% badge = { "draft" => "secondary", "published" => "success", "archived" => "warning" }[@course.status] %>
+            <span class="badge bg-<%= badge %>"><%= @course.status %></span>
+          </dd>
+          <dt class="col-5">受講者数</dt><dd class="col-7"><%= @enrollment_count %>人</dd>
+          <dt class="col-5">レッスン数</dt><dd class="col-7"><%= @lessons.count %>件</dd>
+        </dl>
+        <% if @course.description.present? %>
+          <hr>
+          <p class="mb-0"><%= @course.description %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">レッスン一覧</div>
+      <div class="list-group list-group-flush">
+        <% @lessons.each do |lesson| %>
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <span class="badge bg-secondary me-2"><%= lesson.position %></span>
+              <%= lesson.title %>
+              <% if lesson.description.present? %>
+                <small class="text-muted d-block ms-4"><%= truncate(lesson.description, length: 60) %></small>
+              <% end %>
+            </div>
+            <div class="d-flex gap-1">
+              <%= link_to "編集", edit_course_lesson_path(@course, lesson), class: "btn btn-sm btn-outline-primary" %>
+              <%= button_to "削除", course_lesson_path(@course, lesson), method: :delete,
+                  class: "btn btn-sm btn-outline-danger",
+                  data: { turbo_confirm: "#{lesson.title} を削除しますか？" } %>
+            </div>
+          </div>
+        <% end %>
+        <% if @lessons.empty? %>
+          <div class="list-group-item text-center text-muted py-3">レッスンがありません</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

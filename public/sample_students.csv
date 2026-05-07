@@ -1,0 +1,5 @@
+student_code,name,email,department,enrolled_on,status
+S101,山田 一郎,yamada@example.com,営業部,2026-04-01,active
+S102,伊藤 美子,ito@example.com,技術部,2026-04-01,active
+S103,渡辺 健太,watanabe@example.com,人事部,2026-04-01,active
+S104,加藤 由美,kato@example.com,経理部,2026-04-01,active

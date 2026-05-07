@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-envelope-open-fill"></i> 送信ログ詳細</h2>
+  <%= link_to "一覧へ", email_logs_path, class: "btn btn-secondary" %>
+</div>
+
+<div class="card" style="max-width:600px">
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-4">受講者</dt>
+      <dd class="col-8"><%= @log.student ? link_to(@log.student.name, student_path(@log.student)) : "（削除済み）" %></dd>
+      <dt class="col-4">テンプレート</dt>
+      <dd class="col-8"><%= @log.email_template ? link_to(@log.email_template.name, email_template_path(@log.email_template)) : "（削除済み）" %></dd>
+      <dt class="col-4">送信日時</dt>
+      <dd class="col-8"><%= @log.sent_at&.strftime("%Y年%m月%d日 %H:%M:%S") %></dd>
+      <dt class="col-4">状態</dt>
+      <dd class="col-8">
+        <% badge = { "sent" => "success", "failed" => "danger", "pending" => "secondary" }[@log.status] %>
+        <span class="badge bg-<%= badge %>"><%= @log.status %></span>
+      </dd>
+      <% if @log.error_message.present? %>
+        <dt class="col-4">エラー</dt>
+        <dd class="col-8 text-danger"><%= @log.error_message %></dd>
+      <% end %>
+    </dl>
+  </div>
+</div>

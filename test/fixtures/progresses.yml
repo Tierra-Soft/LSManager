@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  student: one
+  lesson: one
+  status: 1
+  completed_at: 2026-05-07 19:22:22
+
+two:
+  student: two
+  lesson: two
+  status: 1
+  completed_at: 2026-05-07 19:22:22
