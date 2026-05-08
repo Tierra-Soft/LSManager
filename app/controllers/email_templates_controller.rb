@@ -62,15 +62,18 @@ class EmailTemplatesController < ApplicationController
     students.each do |student|
       subject, body = @template.render_for(student)
       begin
+        mail = StudentMailer.template_email(student, subject, body)
         if scheduled_at
           log = EmailLog.create!(student: student, email_template: @template,
-                                 scheduled_at: scheduled_at, status: :pending)
+                                 scheduled_at: scheduled_at, status: :pending,
+                                 raw_message: mail.to_s)
           ScheduledEmailJob.set(wait_until: scheduled_at).perform_later(log.id)
           scheduled += 1
         else
-          StudentMailer.template_email(student, subject, body).deliver_later
+          mail.deliver_later
           EmailLog.create!(student: student, email_template: @template,
-                           sent_at: Time.current, status: :sent)
+                           sent_at: Time.current, status: :sent,
+                           raw_message: mail.to_s)
           sent += 1
         end
       rescue => e
@@ -97,15 +100,18 @@ class EmailTemplatesController < ApplicationController
     students.each do |student|
       subject, body = template.render_for(student)
       begin
+        mail = StudentMailer.template_email(student, subject, body)
         if scheduled_at
           log = EmailLog.create!(student: student, email_template: template,
-                                 scheduled_at: scheduled_at, status: :pending)
+                                 scheduled_at: scheduled_at, status: :pending,
+                                 raw_message: mail.to_s)
           ScheduledEmailJob.set(wait_until: scheduled_at).perform_later(log.id)
           scheduled += 1
         else
-          StudentMailer.template_email(student, subject, body).deliver_later
+          mail.deliver_later
           EmailLog.create!(student: student, email_template: template,
-                           sent_at: Time.current, status: :sent)
+                           sent_at: Time.current, status: :sent,
+                           raw_message: mail.to_s)
           sent += 1
         end
       rescue => e
