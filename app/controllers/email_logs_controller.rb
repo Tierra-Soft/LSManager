@@ -8,5 +8,8 @@ class EmailLogsController < ApplicationController
 
   def show
     @log = EmailLog.includes(:student, :email_template).find(params[:id])
+    if @log.student && @log.email_template
+      @rendered_subject, @rendered_body = @log.email_template.render_for(@log.student)
+    end
   end
 end

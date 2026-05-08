@@ -28,10 +28,18 @@
           <tr>
             <td><%= log.student ? link_to(log.student.name, student_path(log.student)) : "-" %></td>
             <td><%= log.email_template&.name || "（削除済み）" %></td>
-            <td><%= log.sent_at&.strftime("%Y/%m/%d %H:%M") %></td>
             <td>
-              <% badge = { "sent" => "success", "failed" => "danger", "pending" => "secondary" }[log.status] %>
-              <span class="badge bg-<%= badge %>"><%= log.status %></span>
+              <% if log.pending? %>
+                <i class="bi bi-alarm text-warning"></i>
+                <%= log.scheduled_at&.strftime("%Y/%m/%d %H:%M") %> 予定
+              <% else %>
+                <%= log.sent_at&.strftime("%Y/%m/%d %H:%M") %>
+              <% end %>
+            </td>
+            <td>
+              <% badge = { "sent" => "success", "failed" => "danger", "pending" => "warning" }[log.status] %>
+              <% label = { "sent" => "送信済", "failed" => "失敗", "pending" => "予約中" }[log.status] %>
+              <span class="badge bg-<%= badge %> <%= log.pending? ? 'text-dark' : '' %>"><%= label %></span>
             </td>
             <td><%= link_to "詳細", email_log_path(log), class: "btn btn-sm btn-outline-info" %></td>
           </tr>

@@ -22,20 +22,22 @@
   </div>
 </div>
 
+<% offset = (@students.current_page - 1) * @students.limit_value %>
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table table-hover table-sm mb-0 small">
       <thead class="table-light">
         <tr>
-          <th>審判登録番号</th><th>氏名</th><th>フリガナ</th>
+          <th class="text-center" style="width:3em">#</th>
+          <th>氏名</th><th>フリガナ</th>
           <th>所属協会</th><th>技能区分</th><th>メールアドレス</th>
           <th>支払状況</th><th>結果</th><th></th>
         </tr>
       </thead>
       <tbody>
-        <% @students.each do |student| %>
+        <% @students.each_with_index do |student, i| %>
           <tr>
-            <td><code><%= student.referee_number %></code></td>
+            <td class="text-center text-muted"><%= offset + i + 1 %></td>
             <td><%= link_to student.name, student_path(student) %></td>
             <td><%= student.furigana %></td>
             <td><%= student.affiliated_association %></td>
@@ -43,10 +45,12 @@
             <td><%= student.email %></td>
             <td><%= student.payment_status %></td>
             <td><%= student.result %></td>
-            <td class="text-end">
-              <%= link_to "詳細", student_path(student), class: "btn btn-sm btn-outline-info" %>
-              <%= link_to "編集", edit_student_path(student), class: "btn btn-sm btn-outline-primary" %>
-              <%= button_to "削除", student_path(student), method: :delete, class: "btn btn-sm btn-outline-danger",
+            <td class="text-end text-nowrap">
+              <%= link_to "詳細", student_path(student), class: "btn btn-sm btn-outline-info py-0" %>
+              <%= link_to "編集", edit_student_path(student), class: "btn btn-sm btn-outline-primary py-0" %>
+              <%= button_to "削除", student_path(student), method: :delete,
+                  class: "btn btn-sm btn-outline-danger py-0",
+                  form: { style: "display:inline" },
                   data: { turbo_confirm: "#{student.name} を削除しますか？" } %>
             </td>
           </tr>

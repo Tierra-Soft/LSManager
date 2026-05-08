@@ -3,24 +3,48 @@
   <%= link_to "一覧へ", email_logs_path, class: "btn btn-secondary" %>
 </div>
 
-<div class="card" style="max-width:600px">
+<div class="card mb-4">
+  <div class="card-header">送信情報</div>
   <div class="card-body">
-    <dl class="row">
-      <dt class="col-4">受講者</dt>
-      <dd class="col-8"><%= @log.student ? link_to(@log.student.name, student_path(@log.student)) : "（削除済み）" %></dd>
-      <dt class="col-4">テンプレート</dt>
-      <dd class="col-8"><%= @log.email_template ? link_to(@log.email_template.name, email_template_path(@log.email_template)) : "（削除済み）" %></dd>
-      <dt class="col-4">送信日時</dt>
-      <dd class="col-8"><%= @log.sent_at&.strftime("%Y年%m月%d日 %H:%M:%S") %></dd>
-      <dt class="col-4">状態</dt>
-      <dd class="col-8">
-        <% badge = { "sent" => "success", "failed" => "danger", "pending" => "secondary" }[@log.status] %>
-        <span class="badge bg-<%= badge %>"><%= @log.status %></span>
+    <dl class="row mb-0">
+      <dt class="col-3">受講者</dt>
+      <dd class="col-9"><%= @log.student ? link_to(@log.student.name, student_path(@log.student)) : "（削除済み）" %></dd>
+      <dt class="col-3">テンプレート</dt>
+      <dd class="col-9"><%= @log.email_template ? link_to(@log.email_template.name, email_template_path(@log.email_template)) : "（削除済み）" %></dd>
+      <dt class="col-3">状態</dt>
+      <dd class="col-9">
+        <% badge = { "sent" => "success", "failed" => "danger", "pending" => "warning" }[@log.status] %>
+        <% label = { "sent" => "送信済", "failed" => "失敗", "pending" => "予約中" }[@log.status] %>
+        <span class="badge bg-<%= badge %> <%= @log.pending? ? 'text-dark' : '' %>"><%= label %></span>
       </dd>
+      <% if @log.pending? && @log.scheduled_at %>
+        <dt class="col-3">送信予定日時</dt>
+        <dd class="col-9"><%= @log.scheduled_at.strftime("%Y年%m月%d日 %H:%M") %></dd>
+      <% end %>
+      <% if @log.sent_at && !@log.pending? %>
+        <dt class="col-3">送信日時</dt>
+        <dd class="col-9"><%= @log.sent_at.strftime("%Y年%m月%d日 %H:%M:%S") %></dd>
+      <% end %>
       <% if @log.error_message.present? %>
-        <dt class="col-4">エラー</dt>
-        <dd class="col-8 text-danger"><%= @log.error_message %></dd>
+        <dt class="col-3">エラー</dt>
+        <dd class="col-9 text-danger"><%= @log.error_message %></dd>
       <% end %>
     </dl>
   </div>
 </div>
+
+<% if @rendered_subject %>
+  <div class="card">
+    <div class="card-header">送信内容</div>
+    <div class="card-body">
+      <dl class="row mb-2">
+        <dt class="col-2 text-muted">件名</dt>
+        <dd class="col-10"><%= @rendered_subject %></dd>
+      </dl>
+      <div class="text-muted mb-1 fw-semibold small">本文</div>
+      <div class="bg-light border rounded p-3" style="white-space:pre-wrap"><%= @rendered_body %></div>
+    </div>
+  </div>
+<% else %>
+  <div class="alert alert-secondary">受講者またはテンプレートが削除済みのため、送信内容を表示できません。</div>
+<% end %>

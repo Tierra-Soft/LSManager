@@ -4,5 +4,9 @@ class EmailLog < ApplicationRecord
 
   enum :status, { pending: 0, sent: 1, failed: 2 }
 
-  scope :recent, -> { order(sent_at: :desc) }
+  scope :recent, -> { order(Arel.sql("COALESCE(sent_at, scheduled_at) DESC")) }
+
+  def display_time
+    scheduled_at || sent_at
+  end
 end

@@ -13,6 +13,31 @@
     <%= hidden_field_tag "student_ids[]", pv[:student].id %>
   <% end %>
 
+  <div class="card mb-4">
+    <div class="card-header fw-bold"><i class="bi bi-clock"></i> 送信日時</div>
+    <div class="card-body">
+      <div class="row align-items-center g-3">
+        <div class="col-auto">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="send_timing" id="send_now" value="now" checked
+                   onchange="document.getElementById('scheduled_at').disabled=true">
+            <label class="form-check-label" for="send_now">今すぐ送信</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="send_timing" id="send_scheduled" value="scheduled"
+                   onchange="document.getElementById('scheduled_at').disabled=false; document.getElementById('scheduled_at').focus()">
+            <label class="form-check-label" for="send_scheduled">日時を指定</label>
+          </div>
+        </div>
+        <div class="col-auto">
+          <input type="datetime-local" id="scheduled_at" name="scheduled_at"
+                 class="form-control" disabled
+                 min="<%= Time.current.strftime('%Y-%m-%dT%H:%M') %>">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <% @previews.each do |pv| %>
     <div class="card mb-3">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -35,7 +60,30 @@
 
   <div class="d-flex gap-2 justify-content-end mt-3">
     <%= link_to "← 選択に戻る", @template, class: "btn btn-secondary" %>
-    <%= f.submit "#{@previews.size}件に送信する", class: "btn btn-success btn-lg",
-        data: { turbo_confirm: "#{@previews.size}件にメールを送信します。よろしいですか？" } %>
+    <button type="submit" class="btn btn-success btn-lg" id="submit-btn">
+      <%= @previews.size %>件に送信する
+    </button>
   </div>
 <% end %>
+
+<script>
+  const radios = document.querySelectorAll('input[name="send_timing"]');
+  const scheduledInput = document.getElementById('scheduled_at');
+  const submitBtn = document.getElementById('submit-btn');
+  const count = <%= @previews.size %>;
+
+  function updateSubmitLabel() {
+    const isScheduled = document.getElementById('send_scheduled').checked;
+    const dt = scheduledInput.value;
+    if (isScheduled && dt) {
+      const d = new Date(dt);
+      const label = d.toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      submitBtn.textContent = `${count}件を ${label} に予約する`;
+    } else {
+      submitBtn.textContent = `${count}件に送信する`;
+    }
+  }
+
+  radios.forEach(r => r.addEventListener('change', updateSubmitLabel));
+  scheduledInput.addEventListener('change', updateSubmitLabel);
+</script>
