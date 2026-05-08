@@ -14,10 +14,13 @@ Rails.application.routes.draw do
   # Student management
   resources :students do
     collection do
-      get  :import
-      post :import
-      get  :export_csv
+      get   :import
+      post  :import
+      get   :export_csv
+      get   :enrollment_matrix
+      patch :enrollment_matrix
     end
+    resources :student_course_enrollments, only: [:create, :destroy]
   end
 
   # Course management
@@ -30,9 +33,12 @@ Rails.application.routes.draw do
     resources :progresses, only: [:index, :create, :update]
   end
 
+
+
   # Email templates
   resources :email_templates do
     member do
+      post :preview
       post :send_email
     end
     collection do

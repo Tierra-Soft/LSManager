@@ -41,11 +41,11 @@ end
 
 # Sample students
 [
-  { student_code: "S001", name: "田中 太郎", email: "tanaka@example.com", department: "営業部", enrolled_on: "2026-04-01" },
-  { student_code: "S002", name: "鈴木 花子", email: "suzuki@example.com", department: "技術部", enrolled_on: "2026-04-01" },
-  { student_code: "S003", name: "佐藤 次郎", email: "sato@example.com", department: "人事部", enrolled_on: "2026-04-01" }
+  { name: "田中 太郎", email: "tanaka@example.com", furigana: "タナカ タロウ" },
+  { name: "鈴木 花子", email: "suzuki@example.com", furigana: "スズキ ハナコ" },
+  { name: "佐藤 次郎", email: "sato@example.com",   furigana: "サトウ ジロウ" }
 ].each do |attrs|
-  Student.find_or_create_by!(email: attrs[:email]) { |s| s.assign_attributes(attrs.merge(status: :active)) }
+  Student.find_or_create_by!(email: attrs[:email]) { |s| s.assign_attributes(attrs) }
 end
 
 # Email templates

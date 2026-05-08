@@ -1,6 +1,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2><i class="bi bi-people-fill"></i> 受講者一覧</h2>
   <div class="d-flex gap-2">
+    <%= link_to "コース登録一覧", enrollment_matrix_students_path, class: "btn btn-outline-info" %>
     <%= link_to "CSVインポート", import_students_path, class: "btn btn-outline-success" %>
     <%= link_to "CSVエクスポート", export_csv_students_path, class: "btn btn-outline-secondary" %>
     <%= link_to "新規登録", new_student_path, class: "btn btn-primary" %>

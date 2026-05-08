@@ -4,34 +4,69 @@
 </div>
 
 <% @enrollments.each do |enrollment| %>
+  <%
+    lessons = enrollment.course.lessons
+    total_max  = lessons.sum(:total_score)
+    total_got  = lessons.sum { |l| @progresses[l.id]&.score.to_i }
+    course_pct = total_max > 0 ? [(total_got.to_f / total_max * 100).round, 100].min : 0
+    course_done = course_pct >= 100
+  %>
   <div class="card mb-4">
-    <div class="card-header fw-bold"><i class="bi bi-book"></i> <%= enrollment.course.title %></div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span class="fw-bold"><i class="bi bi-book"></i> <%= enrollment.course.title %></span>
+      <div class="d-flex align-items-center gap-3">
+        <span class="small text-muted"><%= total_got %>/<%= total_max %>点</span>
+        <div class="progress" style="width:160px;height:12px">
+          <div class="progress-bar <%= course_done ? 'bg-success' : 'bg-primary' %>"
+               style="width:<%= course_pct %>%"></div>
+        </div>
+        <span class="badge <%= course_done ? 'bg-success' : 'bg-secondary' %>">
+          <%= course_done ? '完了' : "#{course_pct}%" %>
+        </span>
+      </div>
+    </div>
     <div class="list-group list-group-flush">
-      <% enrollment.course.lessons.each do |lesson| %>
+      <% lessons.each do |lesson| %>
         <% progress = @progresses[lesson.id] %>
-        <div class="list-group-item d-flex justify-content-between align-items-center">
-          <div>
-            <span class="badge bg-secondary me-2"><%= lesson.position %></span>
-            <%= lesson.title %>
-            <% if progress&.completed_at %>
-              <small class="text-success ms-2"><i class="bi bi-check-circle"></i> <%= progress.completed_at.strftime("%Y/%m/%d") %>完了</small>
-            <% end %>
+        <% pct = progress ? progress.completion_rate : 0 %>
+        <div class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1 me-3">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-secondary"><%= lesson.position %></span>
+                <span><%= lesson.title %></span>
+                <% if progress&.completed? %>
+                  <span class="badge bg-success"><i class="bi bi-check-circle"></i> 完了</span>
+                  <small class="text-muted"><%= progress.completed_at&.strftime("%Y/%m/%d") %></small>
+                <% elsif progress&.in_progress? %>
+                  <span class="badge bg-warning text-dark">進行中</span>
+                <% end %>
+              </div>
+              <div class="progress" style="height:6px">
+                <div class="progress-bar <%= pct >= 100 ? 'bg-success' : 'bg-info' %>"
+                     style="width:<%= pct %>%"></div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2" style="min-width:200px">
+              <% if progress %>
+                <%= form_with url: student_progress_path(@student, progress), method: :patch, class: "d-flex align-items-center gap-1" do |f| %>
+                  <%= f.number_field :score, value: progress.score, min: 0, max: lesson.total_score,
+                      class: "form-control form-control-sm text-end", style: "width:80px",
+                      onchange: "this.form.requestSubmit()" %>
+                  <span class="text-muted small">/ <%= lesson.total_score %>点</span>
+                <% end %>
+              <% else %>
+                <%= form_with url: student_progresses_path(@student), class: "d-flex align-items-center gap-1" do |f| %>
+                  <%= f.hidden_field :lesson_id, value: lesson.id, name: "progress[lesson_id]" %>
+                  <%= f.number_field :score, value: 0, min: 0, max: lesson.total_score,
+                      name: "progress[score]",
+                      class: "form-control form-control-sm text-end", style: "width:80px",
+                      onchange: "this.form.requestSubmit()" %>
+                  <span class="text-muted small">/ <%= lesson.total_score %>点</span>
+                <% end %>
+              <% end %>
+            </div>
           </div>
-          <% if progress %>
-            <%= form_with url: student_progress_path(@student, progress), method: :patch, class: "d-inline" do |f| %>
-              <%= f.select :status, Progress.statuses.map { |k, _| [k, k] }, { selected: progress.status },
-                  class: "form-select form-select-sm", style: "width:140px",
-                  onchange: "this.form.requestSubmit()" %>
-              <%= f.hidden_field :status %>
-            <% end %>
-          <% else %>
-            <%= form_with url: student_progresses_path(@student), class: "d-inline" do |f| %>
-              <%= f.hidden_field :lesson_id, value: lesson.id, name: "progress[lesson_id]" %>
-              <%= f.select :status, Progress.statuses.map { |k, _| [k, k] }, {},
-                  class: "form-select form-select-sm", style: "width:140px",
-                  name: "progress[status]", onchange: "this.form.requestSubmit()" %>
-            <% end %>
-          <% end %>
         </div>
       <% end %>
     </div>

@@ -1,5 +1,5 @@
 class EmailTemplatesController < ApplicationController
-  before_action :set_template, only: [:show, :edit, :update, :destroy, :send_email]
+  before_action :set_template, only: [:show, :edit, :update, :destroy, :preview, :send_email]
 
   def index
     @templates = EmailTemplate.order(:name).page(params[:page])
@@ -33,6 +33,18 @@ class EmailTemplatesController < ApplicationController
   def destroy
     @template.destroy
     redirect_to email_templates_path, notice: "テンプレートを削除しました"
+  end
+
+  def preview
+    student_ids = params[:student_ids]&.reject(&:blank?)
+    if student_ids.blank?
+      redirect_to @template, alert: "送信対象の受講者を選択してください" and return
+    end
+    @students = Student.where(id: student_ids)
+    @previews = @students.map do |student|
+      subject, body = @template.render_for(student)
+      { student: student, subject: subject, body: body }
+    end
   end
 
   def send_email

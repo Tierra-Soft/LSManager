@@ -88,3 +88,57 @@
     </div>
   </div>
 </div>
+
+<div class="card mt-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span class="fw-bold"><i class="bi bi-book"></i> 登録コース</span>
+    <%= link_to "進捗管理", student_progresses_path(@student), class: "btn btn-sm btn-outline-info" %>
+  </div>
+  <div class="list-group list-group-flush">
+    <% @enrollments.each do |enrollment| %>
+      <%
+        lessons = enrollment.course.lessons
+        total_max = lessons.sum(:total_score)
+        total_got = @progresses_by_course[enrollment.course_id].to_i
+        pct = total_max > 0 ? [(total_got.to_f / total_max * 100).round, 100].min : 0
+      %>
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="flex-grow-1 me-3">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span><%= enrollment.course.title %></span>
+            <% badge = { "draft" => "secondary", "published" => "success", "archived" => "warning" }[enrollment.course.status] %>
+            <span class="badge bg-<%= badge %> small"><%= enrollment.course.status %></span>
+            <% if pct >= 100 %>
+              <span class="badge bg-success"><i class="bi bi-check-circle"></i> 完了</span>
+            <% end %>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="progress flex-grow-1" style="height:6px">
+              <div class="progress-bar <%= pct >= 100 ? 'bg-success' : 'bg-primary' %>"
+                   style="width:<%= pct %>%"></div>
+            </div>
+            <small class="text-muted"><%= total_got %>/<%= total_max %>点 (<%= pct %>%)</small>
+          </div>
+        </div>
+        <%= button_to "登録解除", student_student_course_enrollment_path(@student, enrollment),
+            method: :delete, class: "btn btn-sm btn-outline-danger",
+            data: { turbo_confirm: "「#{enrollment.course.title}」の登録を解除しますか？" } %>
+      </div>
+    <% end %>
+    <% if @enrollments.empty? %>
+      <div class="list-group-item text-muted text-center py-3">登録コースなし</div>
+    <% end %>
+  </div>
+  <div class="card-footer">
+    <% available = @available_courses %>
+    <% if available.any? %>
+      <%= form_with url: student_student_course_enrollments_path(@student), method: :post, class: "d-flex gap-2" do |f| %>
+        <%= f.select :course_id, available.map { |c| [c.title, c.id] },
+            { prompt: "コースを選択..." }, class: "form-select form-select-sm" %>
+        <%= f.submit "登録", class: "btn btn-sm btn-primary" %>
+      <% end %>
+    <% else %>
+      <small class="text-muted">登録可能なコースはありません</small>
+    <% end %>
+  </div>
+</div>

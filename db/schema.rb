@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_07_133501) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_08_013828) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "admins", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -56,6 +59,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_133501) do
     t.text "description"
     t.integer "position"
     t.string "title"
+    t.integer "total_score", default: 100, null: false
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_lessons_on_course_id"
   end
@@ -64,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_133501) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.integer "lesson_id", null: false
+    t.integer "score", default: 0, null: false
     t.integer "status"
     t.integer "student_id", null: false
     t.datetime "updated_at", null: false
@@ -82,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_07_133501) do
   end
 
   create_table "students", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
     t.string "address_detail"
     t.string "affiliated_association"
     t.date "application_date"

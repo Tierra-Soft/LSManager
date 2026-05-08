@@ -1,0 +1,79 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-grid-3x3-gap"></i> コース登録一覧</h2>
+  <%= link_to "受講者一覧へ", students_path, class: "btn btn-secondary" %>
+</div>
+
+<%= form_with url: enrollment_matrix_students_path(page: params[:page]), method: :patch, data: { turbo: false } do |f| %>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="sticky-col" style="min-width:160px">受講者</th>
+            <% @courses.each do |course| %>
+              <th class="text-center" style="min-width:140px">
+                <%= link_to course.title, course_path(course), class: "text-decoration-none text-dark" %>
+                <% badge = { "draft" => "secondary", "published" => "success", "archived" => "warning" }[course.status] %>
+                <br><span class="badge bg-<%= badge %> small"><%= course.status %></span>
+                <br>
+                <button type="button" class="btn btn-outline-primary btn-sm mt-1"
+                        onclick="toggleCourseAll(<%= course.id %>, this)">全選択</button>
+              </th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @students.each do |student| %>
+            <tr>
+              <td class="sticky-col fw-semibold">
+                <%= link_to student.name, student_path(student), class: "text-decoration-none" %>
+                <% if student.furigana.present? %>
+                  <br><small class="text-muted"><%= student.furigana %></small>
+                <% end %>
+              </td>
+              <% @courses.each do |course| %>
+                <td class="text-center">
+                  <input type="hidden" name="enrollments[<%= student.id %>][<%= course.id %>]" value="0">
+                  <input type="checkbox"
+                         name="enrollments[<%= student.id %>][<%= course.id %>]"
+                         value="1"
+                         class="form-check-input course-checkbox-<%= course.id %>"
+                         style="width:1.3em;height:1.3em"
+                         <%= @enrollments_map.key?([student.id, course.id]) ? "checked" : "" %>>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <div>
+        <%= paginate @students %>
+      </div>
+      <%= f.submit "保存", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
+
+<style>
+  .sticky-col {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+    border-right: 2px solid #dee2e6 !important;
+  }
+  thead .sticky-col {
+    background: #f8f9fa;
+  }
+</style>
+
+<script>
+  function toggleCourseAll(courseId, btn) {
+    const boxes = document.querySelectorAll('.course-checkbox-' + courseId);
+    const allChecked = Array.from(boxes).every(b => b.checked);
+    boxes.forEach(b => b.checked = !allChecked);
+    btn.textContent = allChecked ? '全選択' : '全解除';
+  }
+</script>

@@ -4,6 +4,8 @@ class Student < ApplicationRecord
   has_many :progresses, dependent: :destroy
   has_many :email_logs, dependent: :destroy
 
+  scope :active, -> { where(active: true) }
+
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 

@@ -8,11 +8,13 @@ class EmailTemplate < ApplicationRecord
   validates :body, presence: true
 
   def render_for(student)
-    rendered_subject = subject.gsub("{{name}}", student.name)
-                              .gsub("{{student_code}}", student.student_code.to_s)
-    rendered_body = body.gsub("{{name}}", student.name)
-                        .gsub("{{student_code}}", student.student_code.to_s)
-                        .gsub("{{department}}", student.department.to_s)
+    replacements = {
+      "{{name}}"         => student.name.to_s,
+      "{{student_code}}" => student.reception_number.to_s,
+      "{{department}}"   => student.affiliated_association.to_s
+    }
+    rendered_subject = replacements.reduce(subject) { |s, (k, v)| s.gsub(k, v) }
+    rendered_body    = replacements.reduce(body)    { |s, (k, v)| s.gsub(k, v) }
     [rendered_subject, rendered_body]
   end
 end

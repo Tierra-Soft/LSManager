@@ -1,0 +1,41 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-eye-fill"></i> 送信内容の確認</h2>
+  <%= link_to "← 選択に戻る", @template, class: "btn btn-secondary" %>
+</div>
+
+<div class="alert alert-info">
+  <i class="bi bi-info-circle"></i>
+  <strong><%= @previews.size %>件</strong> に以下の内容でメールを送信します。内容を確認してから送信してください。
+</div>
+
+<%= form_with url: send_email_email_template_path(@template), method: :post, data: { turbo: false } do |f| %>
+  <% @previews.each do |pv| %>
+    <%= hidden_field_tag "student_ids[]", pv[:student].id %>
+  <% end %>
+
+  <% @previews.each do |pv| %>
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>
+          <i class="bi bi-person"></i>
+          <strong><%= pv[:student].name %></strong>
+          <small class="text-muted ms-2"><%= pv[:student].email %></small>
+        </span>
+      </div>
+      <div class="card-body">
+        <dl class="row mb-2">
+          <dt class="col-2 text-muted">件名</dt>
+          <dd class="col-10"><%= pv[:subject] %></dd>
+        </dl>
+        <dt class="text-muted mb-1">本文</dt>
+        <div class="bg-light p-3 rounded border" style="white-space:pre-wrap"><%= pv[:body] %></div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="d-flex gap-2 justify-content-end mt-3">
+    <%= link_to "← 選択に戻る", @template, class: "btn btn-secondary" %>
+    <%= f.submit "#{@previews.size}件に送信する", class: "btn btn-success btn-lg",
+        data: { turbo_confirm: "#{@previews.size}件にメールを送信します。よろしいですか？" } %>
+  </div>
+<% end %>

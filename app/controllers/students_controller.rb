@@ -7,14 +7,19 @@ class StudentsController < ApplicationController
     @students = Student.order(:name)
     if params[:q].present?
       q = "%#{params[:q]}%"
-      @students = @students.where("name LIKE ? OR email LIKE ? OR furigana LIKE ? OR referee_number LIKE ?", q, q, q, q)
+      @students = @students.where("name ILIKE ? OR email ILIKE ? OR furigana ILIKE ? OR referee_number ILIKE ?", q, q, q, q)
     end
     @students = @students.page(params[:page])
   end
 
   def show
-    @enrollments = @student.student_course_enrollments.includes(:course)
-    @recent_progresses = @student.progresses.includes(lesson: :course).order(updated_at: :desc).limit(10)
+    @enrollments = @student.student_course_enrollments.includes(course: :lessons)
+    enrolled_course_ids = @enrollments.map(&:course_id)
+    @available_courses = Course.where.not(id: enrolled_course_ids).order(:title)
+    @progresses_by_course = @student.progresses
+      .joins(:lesson)
+      .group("lessons.course_id")
+      .sum(:score)
   end
 
   def new
@@ -74,6 +79,31 @@ class StudentsController < ApplicationController
         @preview_headers, @preview_rows, @total_rows = parse_csv_preview(tmp_path)
         render :import_preview
       end
+    end
+  end
+
+  def enrollment_matrix
+    @courses = Course.order(:title)
+    @students = Student.order(:furigana, :name).page(params[:page]).per(25)
+    @enrollments_map = StudentCourseEnrollment
+      .where(student_id: @students.map(&:id))
+      .each_with_object({}) { |e, h| h[[e.student_id, e.course_id]] = e.id }
+
+    if request.patch?
+      submitted = params[:enrollments]&.to_unsafe_h || {}
+      Student.where(id: @students.map(&:id)).each do |student|
+        student_submitted = submitted[student.id.to_s] || {}
+        @courses.each do |course|
+          enrolled = @enrollments_map.key?([student.id, course.id])
+          should_enroll = student_submitted[course.id.to_s] == "1"
+          if should_enroll && !enrolled
+            student.student_course_enrollments.create!(course: course)
+          elsif !should_enroll && enrolled
+            student.student_course_enrollments.find_by(course: course)&.destroy
+          end
+        end
+      end
+      redirect_to enrollment_matrix_students_path(page: params[:page]), notice: "登録コースを更新しました"
     end
   end
 

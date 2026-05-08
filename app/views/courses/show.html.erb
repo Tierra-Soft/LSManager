@@ -38,6 +38,7 @@
             <div>
               <span class="badge bg-secondary me-2"><%= lesson.position %></span>
               <%= lesson.title %>
+              <span class="text-muted ms-2 small">満点: <%= lesson.total_score %>点</span>
               <% if lesson.description.present? %>
                 <small class="text-muted d-block ms-4"><%= truncate(lesson.description, length: 60) %></small>
               <% end %>
